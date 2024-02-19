@@ -1,0 +1,16 @@
+<h1>Past Games</h1>
+<table class="table">
+  <thead>
+    <tr>
+      <th>Winner</th>
+      <th>Players</th>
+      <th>Date</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let game of games">
+      <td>{{ game.winner }}</td>
+      <td>{{ game.players }}</td>
+      <td>{{ game.date }}</td>
+    </tr>
+  </tbody>
