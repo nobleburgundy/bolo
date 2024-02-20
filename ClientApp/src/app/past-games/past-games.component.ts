@@ -1,5 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, Inject } from '@angular/core';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-past-games',
@@ -13,7 +14,7 @@ export class PastGamesComponent {
   constructor(http: HttpClient, @Inject('BASE_URL') baseUrl: string) {
     console.log('past games ctor');
 
-    http.get<Game[]>(baseUrl + 'api/games').subscribe(
+    http.get<Game[]>(environment.apiUrl + '/games').subscribe(
       (result) => {
         console.log('results', result);
 

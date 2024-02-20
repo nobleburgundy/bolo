@@ -8,11 +8,17 @@ const target = env.ASPNETCORE_HTTPS_PORT
 
 const PROXY_CONFIG = [
   {
-    context: ["/weatherforecast", "/games", "/api/games"],
+    context: ["/weatherforecast"],
     target: target,
     secure: false,
     headers: {
       Connection: "Keep-Alive",
+    },
+  },
+  {
+    "/api": {
+      target: "http://backend:5000",
+      secure: false,
     },
   },
 ];
