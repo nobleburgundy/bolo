@@ -25,4 +25,7 @@ app.MapControllerRoute(
 
 app.MapFallbackToFile("index.html"); ;
 
+// Specify the port here
+var port = Environment.GetEnvironmentVariable("PORT") ?? "5000";
+// app.Run($"http://localhost:{port}");
 app.Run();

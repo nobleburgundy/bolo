@@ -11,8 +11,8 @@ export class PastGamesComponent {
   title = 'Past Games';
   public games: Game[] = [];
 
-  constructor(http: HttpClient, @Inject('BASE_URL') baseUrl: string) {
-    console.log('past games ctor');
+  constructor(http: HttpClient) {
+    console.log('past games ctor environment.apiUrl', environment.apiUrl);
 
     http.get<Game[]>(environment.apiUrl + '/games').subscribe(
       (result) => {
