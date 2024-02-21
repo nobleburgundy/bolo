@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Models;
 
 namespace bolo.Controllers;
 
@@ -6,30 +7,18 @@ namespace bolo.Controllers;
 [Route("api/games")]
 public class GamesController : ControllerBase
 {
-    private static readonly string[] Players = new[]
-    {
-        "James", "Laura", "Luther", "Sonia", "Andrew", "Raquel", "Bob"
-    };
+    private readonly IRepository<Game> _gamesRepository;
 
-    private readonly ILogger<GamesController> _logger;
-
-    public GamesController(ILogger<GamesController> logger)
+    public GamesController(IRepository<Game> gamesRepository)
     {
-        _logger = logger;
-        _logger.LogInformation("pastGames called");
+        _gamesRepository = gamesRepository;
     }
 
     [HttpGet]
-    public IEnumerable<BoloGame> Get()
+    public IEnumerable<Game> GetAll()
     {
-        Console.WriteLine("pastGames called");
-        _logger.LogWarning("pastGames called");
-        return Enumerable.Range(1, 5).Select(index => new BoloGame
-        {
-            Date = DateTime.Now.AddDays(-index),
-            Winner = Players[Random.Shared.Next(Players.Length)],
-            Players = Players.Take(Random.Shared.Next(4, Players.Length)).ToArray()
-        })
-        .ToArray();
+        return _gamesRepository.GetAll();
     }
+
+    // Other actions...
 }
