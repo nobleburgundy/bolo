@@ -1,16 +1,17 @@
+using System;
+
 namespace Models;
 
 public class Game
 {
-    public Game(int id, int winner, int score)
+    public Game(int id, int winner, DateTime gameDate)
     {
         Id = id;
         Winner = winner;
-        Score = score;
+        Game_Date = gameDate;
     }
 
-    public int Id { get; }
-    public int Winner { get; }
-    public int Score { get; }
-    public List<Player>? Players { get; set; } // Added '?' to make the property nullable
+    public int Id { get; set;}
+    public int Winner { get; set;}
+    public DateTime Game_Date { get; set;}
 }

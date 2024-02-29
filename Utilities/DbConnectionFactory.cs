@@ -11,8 +11,8 @@ public class DbConnectionFactory : IDbConnectionFactory
 
     public DbConnectionFactory(IConfiguration configuration)
     {
-        var username = Environment.GetEnvironmentVariable("DB_USERNAME");
-        var password = Environment.GetEnvironmentVariable("DB_PASSWORD");
+        var username = Environment.GetEnvironmentVariable("DB_USERNAME") ?? "jgould";
+        var password = Environment.GetEnvironmentVariable("DB_PASSWORD") ?? "db123";
 
         var connectionStringBuilder = new NpgsqlConnectionStringBuilder(configuration.GetConnectionString("DefaultConnection"))
         {

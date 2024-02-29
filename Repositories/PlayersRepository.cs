@@ -1,67 +1,73 @@
 using Npgsql;
 
-namespace Repositories;
-
-public class PlayersRepository : IRepository<Player>
+namespace Repositories
 {
-    private readonly string _connectionString;
-
-    public PlayersRepository(IDbConnectionFactory dbConnectionFactory)
+    public class PlayersRepository : IRepository<Player>
     {
-        _connectionString = dbConnectionFactory.GetConnectionString();
-    }
+        private readonly string _connectionString;
 
-    public void Add(Player entity)
-    {
-        throw new NotImplementedException();
-    }
-
-    public void Delete(int id)
-    {
-        throw new NotImplementedException();
-    }
-
-    public IEnumerable<Player> GetAll()
-    {
-        var players = new List<Player>();
-
-        using (var conn = new NpgsqlConnection(_connectionString))
+        public PlayersRepository(IDbConnectionFactory dbConnectionFactory)
         {
-            conn.Open();
-
-            using (var cmd = new NpgsqlCommand("SELECT * FROM Players", conn))
-            using (var reader = cmd.ExecuteReader())
-                while (reader.Read())
-                    players.Add(new Player(reader.GetInt32(0), reader.GetString(1), reader.GetString(2), reader.GetInt32(3)));
+            _connectionString = dbConnectionFactory.GetConnectionString();
         }
 
-        return players;
-    }
-
-    public Player GetById(int id)
-    {
-        // todo: fix player ctor
-        var player = new Player(0, "", "", 0);
-
-        using (var conn = new NpgsqlConnection(_connectionString))
+        public void Add(Player entity)
         {
-            conn.Open();
-
-            using (var cmd = new NpgsqlCommand("SELECT * FROM Players WHERE Id = @id", conn))
+            using (var connection = new NpgsqlConnection(_connectionString))
             {
-                cmd.Parameters.AddWithValue("id", id);
-
-                using (var reader = cmd.ExecuteReader())
-                    while (reader.Read())
-                        player = new Player(reader.GetInt32(0), reader.GetString(1), reader.GetString(2), reader.GetInt32(3));
+                connection.Open();
+                using (var command = new NpgsqlCommand("INSERT INTO players (firstname, lastname) VALUES (@firstname, @lastname)", connection))
+                {
+                    command.Parameters.AddWithValue("firstname", entity.FirstName);
+                    command.Parameters.AddWithValue("lastname", entity.LastName);
+                    command.ExecuteNonQuery();
+                }
             }
         }
 
-        return player;
-    }
+        public void Delete(int id)
+        {
+            throw new NotImplementedException();
+        }
 
-    public void Update(Player entity)
-    {
-        throw new NotImplementedException();
+        public IEnumerable<Player> GetAll()
+        {
+            var players = new List<Player>();
+
+            using (var connection = new NpgsqlConnection(_connectionString))
+            {
+                connection.Open();
+                using (var command = new NpgsqlCommand("SELECT * FROM players", connection))
+                using (var reader = command.ExecuteReader())
+                    while (reader.Read())
+                        players.Add(new Player(reader.GetInt32(0), reader.GetString(1), reader.GetString(2)));
+            }
+
+            return players;
+        }
+
+        public Player GetById(int id)
+        {
+            var player = new Player(0, "", "");
+
+            using (var connection = new NpgsqlConnection(_connectionString))
+            {
+                connection.Open();
+                using (var command = new NpgsqlCommand("SELECT * FROM players WHERE id = @id", connection))
+                {
+                    command.Parameters.AddWithValue("id", id);
+                    using (var reader = command.ExecuteReader())
+                        while (reader.Read())
+                            player = new Player(reader.GetInt32(0), reader.GetString(1), reader.GetString(2));
+                }
+            }
+
+            return player;
+        }
+
+        public void Update(Player entity)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

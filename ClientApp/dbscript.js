@@ -1,78 +1,78 @@
-const { Client } = require("pg");
-const _ = require("lodash");
-const { randomInt } = require("crypto");
+// user: "jgould",
+// host: "localhost",
+// database: "bolo_db",
+// password: "db123",
+// port: 5432,
 
-async function main() {
-  const client = new Client({
-    user: "jgould",
-    host: "localhost",
-    database: "bolo_db",
-    password: "db123",
-    port: 5432,
-  });
+// dbscript.js
+const { Sequelize, DataTypes } = require("sequelize");
+const sequelize = new Sequelize(
+  "postgres://jgould:db123@localhost:5432/bolo_db"
+); // replace with your connection string
 
-  await client.connect();
+const Player = sequelize.define(
+  "Player",
+  { name: DataTypes.STRING },
+  { timestamps: false }
+);
+const Game = sequelize.define(
+  "Game",
+  { date: DataTypes.DATE, winnerId: DataTypes.INTEGER },
+  { timestamps: false }
+);
+const GamePlayer = sequelize.define(
+  "GamePlayer",
+  { gameId: DataTypes.INTEGER, playerId: DataTypes.INTEGER },
+  { timestamps: false }
+);
 
-  await client.query(`
-        CREATE TABLE IF NOT EXISTS Players (
-            Id SERIAL PRIMARY KEY,
-            FirstName VARCHAR(255),
-            LastName VARCHAR(255)
-        )
-    `);
+const players = [
+  "James G",
+  "Laura M",
+  "Luther M",
+  "Townes MG",
+  "Andrew M",
+  "Raquel P",
+  "Bob C",
+  "Sally C",
+];
 
-  await client.query(`
-        CREATE TABLE IF NOT EXISTS Games (
-            Id SERIAL PRIMARY KEY,
-            Winner INTEGER REFERENCES Players(Id),
-            Score INTEGER
-        )
-    `);
+async function populateDB() {
+  try {
+    await sequelize.sync({ force: true }); // This will clear the database
 
-  await client.query(`
-        CREATE TABLE IF NOT EXISTS GamePlayers (
-            GameId INTEGER REFERENCES Games(Id),
-            PlayerId INTEGER REFERENCES Players(Id)
-        )
-    `);
-
-  const players = _.range(10).map(() => ({
-    FirstName: "TestFirst" + randomInt(10),
-    LastName: "TestLast" + randomInt(1000),
-  }));
-
-  for (const player of players) {
-    await client.query(
-      "INSERT INTO Players (FirstName, LastName) VALUES ($1, $2)",
-      [player.FirstName, player.LastName]
+    const playerInstances = await Player.bulkCreate(
+      players.map((name) => ({ name }))
     );
-  }
 
-  const { rows } = await client.query("SELECT Id FROM Players");
-  const playerIds = rows.map((row) => row.id);
-
-  const games = _.range(100).map(() => ({
-    Winner: _.sample(playerIds),
-    Score: 10000,
-  }));
-
-  for (const game of games) {
-    const res = await client.query(
-      "INSERT INTO Games (Winner, Score) VALUES ($1, $2) RETURNING Id",
-      [game.Winner, game.Score]
-    );
-    const gameId = res.rows[0].id;
-    const gamePlayers = _.sampleSize(playerIds, _.random(4, 6));
-    for (const playerId of gamePlayers) {
-      await client.query(
-        "INSERT INTO GamePlayers (GameId, PlayerId) VALUES ($1, $2)",
-        [gameId, playerId]
-      );
+    const games = [];
+    for (let i = 0; i < 10; i++) {
+      const date = new Date();
+      date.setFullYear(date.getFullYear() - Math.floor(Math.random() * 2));
+      date.setDate(date.getDate() - Math.floor(Math.random() * 365));
+      const winnerId =
+        playerInstances[Math.floor(Math.random() * playerInstances.length)].id;
+      games.push({ date, winnerId });
     }
-  }
+    const gameInstances = await Game.bulkCreate(games);
 
-  await client.end();
+    for (const game of gameInstances) {
+      const playerIds = playerInstances.map((p) => p.id);
+      while (playerIds.length) {
+        const playerId = playerIds.splice(
+          Math.floor(Math.random() * playerIds.length),
+          1
+        )[0];
+        await GamePlayer.create({ gameId: game.id, playerId });
+      }
+    }
+
+    console.log("Database populated successfully");
+  } catch (err) {
+    console.error("Error populating database:", err);
+  } finally {
+    await sequelize.close();
+  }
 }
 
-main().catch(console.error);
-console.log("DB test data script complete.");
+populateDB();

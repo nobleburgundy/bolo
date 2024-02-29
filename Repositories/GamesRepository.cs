@@ -1,3 +1,4 @@
+using System;
 using Models;
 using Npgsql;
 
@@ -24,16 +25,27 @@ public class GamesRepository : IRepository<Game>
 
     public IEnumerable<Game> GetAll()
     {
-        var games = new List<Game>();
-
+        List<Game> games = new List<Game>();
         using (var conn = new NpgsqlConnection(_connectionString))
         {
             conn.Open();
 
-            using (var cmd = new NpgsqlCommand("SELECT * FROM Games", conn))
-            using (var reader = cmd.ExecuteReader())
-                while (reader.Read())
-                    games.Add(new Game(reader.GetInt32(0), reader.GetInt32(1), reader.GetInt32(2)));
+            using (var command = new NpgsqlCommand("SELECT * FROM games", conn))
+            {
+                using (var reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        Game game = new Game(
+                            reader.GetInt32(reader.GetOrdinal("id")),
+                            reader.GetInt32(reader.GetOrdinal("winner")),
+                            reader.GetDateTime(reader.GetOrdinal("game_date"))
+                        );
+
+                        games.Add(game);
+                    }
+                }
+            }
         }
 
         return games;
@@ -41,7 +53,7 @@ public class GamesRepository : IRepository<Game>
 
     public Game GetById(int id)
     {
-        var game = new Game(0, 0, 0);
+        var game = new Game(0, 0, new DateTime());
 
         using (var conn = new NpgsqlConnection(_connectionString))
         {
@@ -53,7 +65,13 @@ public class GamesRepository : IRepository<Game>
 
                 using (var reader = cmd.ExecuteReader())
                     while (reader.Read())
-                        game = new Game(reader.GetInt32(0), reader.GetInt32(1), reader.GetInt32(2));
+                    {
+                        game = new Game(
+                            reader.GetInt32(reader.GetOrdinal("id")),
+                            reader.GetInt32(reader.GetOrdinal("winner")),
+                            reader.GetDateTime(reader.GetOrdinal("game_date"))
+                        );
+                    }
             }
         }
 

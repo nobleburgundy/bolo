@@ -9,8 +9,8 @@
   </thead>
   <tbody>
     <tr *ngFor="let game of games">
-      <td>{{ game.winner }}</td>
-      <td>{{ game.players }}</td>
-      <td>{{ game.date }}</td>
+      <td>{{ getGameWinner(game) }}</td>
+      <td>{{ getGamePlayers(game) }}</td>
+      <td>{{ game.game_Date.substring(0, game.game_Date.indexOf("T")) }}</td>
     </tr>
   </tbody>
