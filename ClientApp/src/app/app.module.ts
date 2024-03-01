@@ -10,6 +10,7 @@ import { HomeComponent } from './home/home.component';
 import { CounterComponent } from './counter/counter.component';
 import { FetchDataComponent } from './fetch-data/fetch-data.component';
 import { PastGamesComponent } from './past-games/past-games.component';
+import { NewGameComponent } from './new-game/new-game.component';
 
 @NgModule({
   declarations: [
@@ -18,6 +19,7 @@ import { PastGamesComponent } from './past-games/past-games.component';
     CounterComponent,
     FetchDataComponent,
     PastGamesComponent,
+    NewGameComponent,
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),
@@ -29,6 +31,7 @@ import { PastGamesComponent } from './past-games/past-games.component';
       { path: 'counter', component: CounterComponent },
       { path: 'fetch-data', component: FetchDataComponent },
       { path: 'past-games', component: PastGamesComponent },
+      { path: 'new-game', component: NewGameComponent },
     ]),
   ],
   providers: [],
