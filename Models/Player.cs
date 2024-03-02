@@ -7,7 +7,12 @@ public class Player
         LastName = lastName;
     }
 
+    public Player(int id)
+    {
+        Id = id;
+    }
+
     public int Id { get; }
-    public string FirstName { get; }
-    public string LastName { get; }
+    public string? FirstName { get; set; }
+    public string? LastName { get; set; }
 }

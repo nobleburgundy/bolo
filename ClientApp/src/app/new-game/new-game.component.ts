@@ -42,20 +42,12 @@ export class NewGameComponent {
   addPlayer(event: any) {
     event.preventDefault(); // Prevent losing focus
     console.log('addPlayer: ' + this.playerTypeahead.value);
-    var playerGame = { name: this.playerTypeahead.value, score: this.playerScore.value };
+    var playerGame = {
+      name: this.playerTypeahead.value,
+      score: this.playerScore.value,
+    };
     console.log('playerGame: ', playerGame);
     this.addedPlayers.push(playerGame);
-    
-
-    // if (this.filteredPlayers.length > 0) {
-    //   this.addedPlayers.push(this.filteredPlayers[0]);
-    //   this.playerTypeahead.setValue('');
-    //   this.filteredPlayers = [];
-    // } else {
-    //   this.addedPlayers.push(this.playerTypeahead.value);
-    //   this.players.push(this.playerTypeahead.value);
-    //   this.playerTypeahead.setValue('');
-    
   }
 
   updateInput(event: any) {
@@ -68,6 +60,12 @@ export class NewGameComponent {
     if (foundPlayer.length == 1) {
       this.playerTypeahead.setValue(foundPlayer[0]);
     }
+  }
+
+  addNewGame(event: any) {
+    event.preventDefault();
+    console.log('game date: ', this.gameDateControl.value);
+    console.log('players/scores: ', this.addedPlayers);
   }
 }
 

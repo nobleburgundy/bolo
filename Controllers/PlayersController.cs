@@ -20,5 +20,32 @@ public class PlayersController : ControllerBase
         return _playersRepository.GetAll();
     }
 
-    // Other actions...
+    [HttpGet("{id}")]
+    public ActionResult<Player> GetById(int id)
+    {
+        var player = _playersRepository.GetById(id);
+        if (player == null)
+        {
+            return NotFound();
+        }
+        return player;
+    }
+
+    [HttpPost]
+    public ActionResult<Player> Create(Player player)
+    {
+        _playersRepository.Add(player);
+        return CreatedAtAction(nameof(GetById), new { id = player.Id }, player);
+    }
+
+    [HttpPut("{id}")]
+    public IActionResult Update(int id, Player player)
+    {
+        if (id != player.Id)
+        {
+            return BadRequest();
+        }
+        _playersRepository.Update(player);
+        return NoContent();
+    }
 }
