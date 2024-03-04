@@ -36,6 +36,12 @@ public class GamesRepository : IRepository<Game>
         return game.Id;
     }
 
+    /**
+     * This method is used to create a new game in the database.
+     * 
+     * @param gameDate The date of the game.
+     * @return The id of the new game.
+     */
     public int NewGame(DateTime gameDate) 
     {
         var game = new Game(gameDate);
@@ -52,7 +58,7 @@ public class GamesRepository : IRepository<Game>
             )
             {
                 cmd.Parameters.AddWithValue("gameDate", game.Game_Date);
-                return (int)cmd.ExecuteScalar();
+                return (int)(cmd.ExecuteScalar() ?? 0);
             }
         }
     }
@@ -62,6 +68,11 @@ public class GamesRepository : IRepository<Game>
         throw new NotImplementedException();
     }
 
+    /**
+     * This method is used to get all games from the database.
+     * 
+     * @return A list of all games.
+     */
     public IEnumerable<Game> GetAll()
     {
         List<Game> games = new List<Game>();
@@ -89,6 +100,12 @@ public class GamesRepository : IRepository<Game>
         return games;
     }
 
+    /**
+     * This method is used to get a game by its id.
+     * 
+     * @param id The id of the game.
+     * @return The game with the given id.
+     */
     public Game GetById(int id)
     {
         var game = new Game(0, new DateTime());
@@ -115,6 +132,12 @@ public class GamesRepository : IRepository<Game>
         return game;
     }
 
+    /**
+     * This method is used to get all players that played in a game.
+     * 
+     * @param gameId The id of the game.
+     * @return A list of all players that played in the game.
+     */
     public IEnumerable<PlayerScore> GetGamePlayers(int gameId)
     {
         Console.WriteLine("GetGamePlayers");
@@ -175,6 +198,13 @@ public class GamesRepository : IRepository<Game>
         return players;
     }
 
+    /**
+     * This method is used to add a game with player scores to the database.
+     * 
+     * @param gameDate The date of the game.
+     * @param gamePlayers A list of players and their scores.
+     * @return The id of the new game.
+     */
     public int AddGameWithPlayerScores(DateTime gameDate, IEnumerable<PlayerScore> gamePlayers)
     {
         Console.WriteLine("AddGamesWithPlayersScores gameDate" + gameDate);
@@ -212,6 +242,11 @@ public class GamesRepository : IRepository<Game>
         }
     }
 
+    /**
+     * This method is used to add a player to a game in the database.
+     * 
+     * @param playerGame The player and their score in the game.
+     */
     public void AddPlayerToGame(PlayerGame playerGame)
     {
         using (var conn = new NpgsqlConnection(_connectionString))

@@ -15,6 +15,6 @@ public class PlayerScore
 
     public int PlayerId { get; set; }
     public int Score { get; set; }
-    public string FirstName { get; set; }
-    public string LastName { get; set; }
+    public string? FirstName { get; set; }
+    public string? LastName { get; set; }
 }

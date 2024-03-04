@@ -13,6 +13,12 @@ namespace Repositories
 
         public void Add(Player entity)
         {
+            if (entity == null)
+                throw new ArgumentNullException(nameof(entity));
+
+            if (entity.LastName == null || entity.FirstName == null)
+                throw new ArgumentNullException("First name and last name cannot be null");
+
             using (var connection = new NpgsqlConnection(_connectionString))
             {
                 connection.Open();
