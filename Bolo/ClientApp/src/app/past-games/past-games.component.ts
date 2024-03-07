@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Component, Inject } from '@angular/core';
+import { Component, Inject, OnInit } from '@angular/core';
 import { environment } from 'src/environments/environment';
 import { Player } from '../models/Player';
 import { Game } from '../models/Game';
@@ -9,20 +9,28 @@ import { Game } from '../models/Game';
   templateUrl: './past-games.component.html',
   styleUrls: ['./past-games.component.css'],
 })
-export class PastGamesComponent {
+export class PastGamesComponent implements OnInit {
   httpClient: HttpClient;
   title = 'Past Games';
   public games: Game[] = [];
 
   constructor(http: HttpClient) {
-    console.log('past games ctor environment.apiUrl', environment.apiUrl);
     this.httpClient = http;
+  }
 
+  ngOnInit(): void {
     this.httpClient.get<Game[]>(environment.apiUrl + '/games').subscribe(
       (result) => {
         this.games = result;
-        this.games.forEach((game) => {
-          game.players = this.getGamePlayers(game);
+        this.games.forEach(async (game) => {
+          game.players = await this.httpClient
+            .get<Player[]>(
+              environment.apiUrl + '/games/' + game.id + '/players'
+            )
+            .toPromise()
+            .then((result) => {
+              return result ?? [];
+            });
         });
 
         console.log('games results', this.games);
@@ -31,12 +39,9 @@ export class PastGamesComponent {
     );
   }
 
-  getGameWinner(game: Game) {
-    console.log('test game date' + game.game_Date);
-    // if (winner) {
-    //   return `${winner?.firstName} ${winner?.lastName}`;
-    // }
-    return 'Townes Meyer Gould';
+  getGameWinner(game: Game): string {
+    var winner = game.players.find((p) => p.score === 10000);
+    return winner ? winner.firstName + ' ' + winner.lastName : 'No Winner';
   }
 
   getGamePlayers(game: Game): Player[] {
@@ -53,6 +58,10 @@ export class PastGamesComponent {
       );
 
     return gamePlayers;
+  }
+
+  getGamePlayerNames(game: Game): string {
+    return game.players.map((p) => p.firstName + ' ' + p.lastName).join(', ');
   }
 
   randomInt(min: number, max: number): number {

@@ -144,7 +144,6 @@ public class GamesRepository : IRepository<Game>
      */
     public IEnumerable<PlayerScore> GetGamePlayers(int gameId)
     {
-        Console.WriteLine("GetGamePlayers");
         List<PlayerScore> players = new List<PlayerScore>();
 
         using (var conn = new NpgsqlConnection(_connectionString))

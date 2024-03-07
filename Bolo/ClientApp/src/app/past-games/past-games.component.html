@@ -10,7 +10,7 @@
   <tbody>
     <tr *ngFor="let game of games">
       <td>{{ getGameWinner(game) }}</td>
-      <td>{{ game.players }}</td>
+      <td>{{ getGamePlayerNames(game) }}</td>
       <td>{{ game.game_Date.substring(0, game.game_Date.indexOf("T")) }}</td>
     </tr>
   </tbody>
