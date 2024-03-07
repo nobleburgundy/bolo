@@ -34,8 +34,10 @@ public class PlayersController : ControllerBase
     [HttpPost]
     public ActionResult<Player> Create(Player player)
     {
-        _playersRepository.Add(player);
-        return CreatedAtAction(nameof(GetById), new { id = player.Id }, player);
+        var id  = _playersRepository.Add(player);
+        Console.WriteLine("Create Player id: " + id);
+        player.Id = id;
+        return CreatedAtAction(nameof(GetById), new { id }, player);
     }
 
     [HttpPut("{id}")]

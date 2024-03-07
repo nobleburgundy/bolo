@@ -8,10 +8,12 @@ namespace Repositories;
 public class GamesRepository : IRepository<Game>
 {
     private readonly string _connectionString;
+    private PlayersRepository playersRepository;
 
     public GamesRepository(IDbConnectionFactory dbConnectionFactory)
     {
         _connectionString = dbConnectionFactory.GetConnectionString();
+        playersRepository = new PlayersRepository(dbConnectionFactory);
     }
 
     public int Add(DateTime gameDate)
@@ -91,6 +93,8 @@ public class GamesRepository : IRepository<Game>
                             reader.GetDateTime(reader.GetOrdinal("game_date"))
                         );
 
+                        game.Players = GetGamePlayers(game.Id);
+
                         games.Add(game);
                     }
                 }
@@ -149,7 +153,7 @@ public class GamesRepository : IRepository<Game>
 
             using (
                 var cmd = new NpgsqlCommand(
-                    "SELECT * FROM playergame WHERE game_id = @gameId",
+                    "SELECT * FROM game_players WHERE game_id = @gameId",
                     conn
                 )
             )
@@ -162,7 +166,7 @@ public class GamesRepository : IRepository<Game>
                     {
                         players.Add(
                             new PlayerScore(
-                                reader.GetInt32(reader.GetOrdinal("playerid")),
+                                reader.GetInt32(reader.GetOrdinal("player_id")),
                                 reader.GetInt32(reader.GetOrdinal("score"))
                             )
                         );
@@ -207,18 +211,29 @@ public class GamesRepository : IRepository<Game>
      */
     public int AddGameWithPlayerScores(DateTime gameDate, IEnumerable<PlayerScore> gamePlayers)
     {
-        Console.WriteLine("AddGamesWithPlayersScores gameDate" + gameDate);
+        Console.WriteLine("AddGamesWithPlayersScores gameDate: " + gameDate);
         var gameId = NewGame(gameDate);
-        Console.WriteLine("AddGamesWithPlayersScores gameId" + gameId);
+        Console.WriteLine("AddGamesWithPlayersScores gameId: " + gameId);
         using (var conn = new NpgsqlConnection(_connectionString))
         {
             conn.Open();
 
+
             foreach (var gamePlayer in gamePlayers)
             {
+                var playerId = playersRepository.GetById(gamePlayer.PlayerId);
+                Console.WriteLine($"AddGamesWithPlayersScores playerId: {playerId.Id} {playerId.FirstName} {playerId.LastName}");
+                if (playerId.Id == 0)
+                {
+                    Console.WriteLine($"AddGamesWithPlayersScores adding new player: {gamePlayer.FirstName} {gamePlayer.LastName}");
+                    gamePlayer.PlayerId = playersRepository.Add(new Player(gamePlayer.FirstName, gamePlayer.LastName));
+                    Console.WriteLine($"AddGamesWithPlayersScores new playerId: {gamePlayer.PlayerId}");
+                }
+
+
                 using (
                     var cmd = new NpgsqlCommand(
-                        "INSERT INTO playergame (game_id, player_id, score) VALUES (@gameId, @playerId, @score)",
+                        "INSERT INTO game_players (game_id, player_id, score) VALUES (@gameId, @playerId, @score) returning game_id",
                         conn
                     )
                 )
@@ -255,7 +270,7 @@ public class GamesRepository : IRepository<Game>
 
             using (
                 var cmd = new NpgsqlCommand(
-                    "INSERT INTO playergame (game_id, player_id, score) VALUES (@gameId, @playerId, @score)",
+                    "INSERT INTO game_players (game_id, player_id, score) VALUES (@gameId, @playerId, @score)",
                     conn
                 )
             )
@@ -285,7 +300,7 @@ public class GamesRepository : IRepository<Game>
         throw new NotImplementedException();
     }
 
-    public void Add(Game entity)
+    public int Add(Game entity)
     {
         throw new NotImplementedException();
     }

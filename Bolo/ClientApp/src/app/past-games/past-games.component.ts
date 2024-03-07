@@ -10,48 +10,49 @@ import { Game } from '../models/Game';
   styleUrls: ['./past-games.component.css'],
 })
 export class PastGamesComponent {
+  httpClient: HttpClient;
   title = 'Past Games';
   public games: Game[] = [];
-  public players: Player[] = [];
 
   constructor(http: HttpClient) {
     console.log('past games ctor environment.apiUrl', environment.apiUrl);
+    this.httpClient = http;
 
-    http.get<Game[]>(environment.apiUrl + '/games').subscribe(
+    this.httpClient.get<Game[]>(environment.apiUrl + '/games').subscribe(
       (result) => {
         this.games = result;
+        this.games.forEach((game) => {
+          game.players = this.getGamePlayers(game);
+        });
+
         console.log('games results', this.games);
-      },
-      (error) => console.error(error)
-    );
-
-    http.get<Player[]>(environment.apiUrl + '/players').subscribe(
-      (result) => {
-        // console.log('players results', result);
-
-        this.players = result;
       },
       (error) => console.error(error)
     );
   }
 
   getGameWinner(game: Game) {
-    var winner = this.players.find((p) => p.id === game.winner);
     console.log('test game date' + game.game_Date);
-    if (winner) {
-      return `${winner?.firstName} ${winner?.lastName}`;
-    }
-    return null;
+    // if (winner) {
+    //   return `${winner?.firstName} ${winner?.lastName}`;
+    // }
+    return 'Townes Meyer Gould';
   }
 
-  getGamePlayers(game: Game): string {
+  getGamePlayers(game: Game): Player[] {
     let gamePlayers: Player[] = [];
-    for (let i = 0; i < 5; i++) {
-      gamePlayers[i] = this.players[this.randomInt(0, this.players.length - 1)];
-    }
-    // console.log('gamePlayers', gamePlayers);
 
-    return gamePlayers.map((p) => `${p.firstName} ${p.lastName}`).join(', ');
+    this.httpClient
+      .get<Player[]>(environment.apiUrl + '/games/' + game.id + '/players')
+      .subscribe(
+        (result) => {
+          gamePlayers = result;
+          console.log('game players results', gamePlayers);
+        },
+        (error) => console.error(error)
+      );
+
+    return gamePlayers;
   }
 
   randomInt(min: number, max: number): number {

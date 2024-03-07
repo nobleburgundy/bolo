@@ -10,6 +10,7 @@ import { formatDate } from '@angular/common';
   templateUrl: './new-game.component.html',
 })
 export class NewGameComponent {
+  httpClient: HttpClient;
   players: string[] = [];
   playerTypeahead = new FormControl();
   winnerTypeahead = new FormControl();
@@ -20,9 +21,10 @@ export class NewGameComponent {
   addedPlayers: PlayerGame[] = [];
 
   constructor(http: HttpClient) {
+    this.httpClient = http;
     this.gameDateControl.setValue(formatDate(this.today, 'yyyy-MM-dd', 'en'));
 
-    http.get<Player[]>(environment.apiUrl + '/players').subscribe(
+    this.httpClient.get<Player[]>(environment.apiUrl + '/players').subscribe(
       (result) => {
         // console.log('players results', result);
 
@@ -43,7 +45,8 @@ export class NewGameComponent {
     event.preventDefault(); // Prevent losing focus
     console.log('addPlayer: ' + this.playerTypeahead.value);
     var playerGame = {
-      name: this.playerTypeahead.value,
+      firstName: this.playerTypeahead.value.split(' ')[0],
+      lastName: this.playerTypeahead.value.split(' ')[1],
       score: this.playerScore.value,
     };
     console.log('playerGame: ', playerGame);
@@ -66,10 +69,22 @@ export class NewGameComponent {
     event.preventDefault();
     console.log('game date: ', this.gameDateControl.value);
     console.log('players/scores: ', this.addedPlayers);
+    this.httpClient
+      .post(environment.apiUrl + '/games', {
+        gameDate: this.gameDateControl.value,
+        playerScores: this.addedPlayers,
+      })
+      .subscribe(
+        (result) => {
+          console.log('games post result', result);
+        },
+        (error) => console.error(error)
+      );
   }
 }
 
 interface PlayerGame {
-  name: string;
+  firstName: string;
+  lastName: string;
   score: number;
 }

@@ -48,6 +48,7 @@ public class GamesController : ControllerBase
     public ActionResult<Game> Create(GamePlayersScores gamePlayers)
     {
         var gamesRepository = (GamesRepository)_gamesRepository;
+
         var newGameId = gamesRepository.AddGameWithPlayerScores(gamePlayers.gameDate, gamePlayers.PlayerScores);
         return CreatedAtAction(nameof(GetById), new { id = newGameId }, newGameId);
     }

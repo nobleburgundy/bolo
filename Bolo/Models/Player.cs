@@ -1,3 +1,5 @@
+using System.Text.Json.Serialization;
+
 public class Player
 {
     public Player(int id, string firstName, string lastName)
@@ -12,7 +14,14 @@ public class Player
         Id = id;
     }
 
-    public int Id { get; }
+    [JsonConstructor]
+    public Player(string? firstName, string? lastName)
+    {
+        FirstName = firstName;
+        LastName = lastName;
+    }
+
+    public int Id { get; set; }
     public string? FirstName { get; set; }
     public string? LastName { get; set; }
 }

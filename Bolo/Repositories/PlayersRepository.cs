@@ -11,7 +11,13 @@ namespace Repositories
             _connectionString = dbConnectionFactory.GetConnectionString();
         }
 
-        public void Add(Player entity)
+        /**
+        * This method is used to add a new player to the database.
+        * 
+        * @param entity The player to add.
+        * @return The id of the new player.
+        */
+        public int Add(Player entity)
         {
             if (entity == null)
                 throw new ArgumentNullException(nameof(entity));
@@ -22,11 +28,13 @@ namespace Repositories
             using (var connection = new NpgsqlConnection(_connectionString))
             {
                 connection.Open();
-                using (var command = new NpgsqlCommand("INSERT INTO players (firstname, lastname) VALUES (@firstname, @lastname)", connection))
+                using (var command = new NpgsqlCommand("INSERT INTO players (firstname, lastname) VALUES (@firstname, @lastname) returning id", connection))
                 {
                     command.Parameters.AddWithValue("firstname", entity.FirstName);
                     command.Parameters.AddWithValue("lastname", entity.LastName);
-                    command.ExecuteNonQuery();
+                    // command.ExecuteNonQuery();
+                    return Convert.ToInt32(command.ExecuteScalar());
+
                 }
             }
         }
@@ -52,6 +60,12 @@ namespace Repositories
             return players;
         }
 
+        /**
+         * This method is used to get a player by its id.
+         * 
+         * @param id The id of the player.
+         * @return The player with the given id.
+         */
         public Player GetById(int id)
         {
             var player = new Player(0, "", "");

@@ -26,17 +26,6 @@ const GamePlayer = sequelize.define(
   { timestamps: false }
 );
 
-const players = [
-  "James G",
-  "Laura M",
-  "Luther M",
-  "Townes MG",
-  "Andrew M",
-  "Raquel P",
-  "Bob C",
-  "Sally C",
-];
-
 async function populateDB() {
   try {
     await sequelize.sync({ force: true }); // This will clear the database
