@@ -9,7 +9,7 @@ import { formatDate } from '@angular/common';
   selector: 'app-new-game',
   templateUrl: './new-game.component.html',
 })
-export class NewGameComponent {
+export class NewGameComponent implements OnInit {
   httpClient: HttpClient;
   players: string[] = [];
   playerTypeahead = new FormControl();
@@ -23,11 +23,12 @@ export class NewGameComponent {
   constructor(http: HttpClient) {
     this.httpClient = http;
     this.gameDateControl.setValue(formatDate(this.today, 'yyyy-MM-dd', 'en'));
+  }
 
+  ngOnInit(): void {
     this.httpClient.get<Player[]>(environment.apiUrl + '/players').subscribe(
       (result) => {
-        // console.log('players results', result);
-
+        console.log('players results', result);
         this.players = result.map((p) => `${p.firstName} ${p.lastName}`);
       },
       (error) => console.error(error)
@@ -56,7 +57,7 @@ export class NewGameComponent {
   updateInput(event: any) {
     // super basic typeahead - needs to be improved
     event.preventDefault();
-    console.log('updateInput: ' + event.target.value);
+    console.log('updateInput: ' + event.target.value, this.players);
     var foundPlayer = this.players.filter(
       (player) => player.indexOf(event.target.value) > -1
     );
