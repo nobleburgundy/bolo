@@ -6,7 +6,7 @@ WORKDIR /app
 
 # Copy csproj and restore dependencies
 COPY *.csproj ./
-RUN dotnet restore
+RUN dotnet restore bolo.csproj
 
 # Copy the entire project and build
 COPY . ./
