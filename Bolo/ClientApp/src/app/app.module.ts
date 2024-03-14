@@ -20,6 +20,7 @@ import { NewGameComponent } from './new-game/new-game.component';
     FetchDataComponent,
     PastGamesComponent,
     NewGameComponent,
+    HomeComponent,
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),

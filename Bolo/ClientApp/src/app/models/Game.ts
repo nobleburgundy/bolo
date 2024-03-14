@@ -1,8 +1,8 @@
-import { Player } from "./Player";
+import { GamePlayer, Player } from './Player';
 
 export interface Game {
   id: number;
   winner: number;
-  players: Player[];
+  players: GamePlayer[];
   game_Date: string;
 }

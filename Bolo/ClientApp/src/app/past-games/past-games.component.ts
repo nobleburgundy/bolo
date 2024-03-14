@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, Inject, OnInit } from '@angular/core';
 import { environment } from 'src/environments/environment';
-import { Player } from '../models/Player';
+import { GamePlayer, Player } from '../models/Player';
 import { Game } from '../models/Game';
 
 @Component({
@@ -24,7 +24,7 @@ export class PastGamesComponent implements OnInit {
         this.games = result;
         this.games.forEach(async (game) => {
           game.players = await this.httpClient
-            .get<Player[]>(
+            .get<GamePlayer[]>(
               environment.apiUrl + '/games/' + game.id + '/players'
             )
             .toPromise()

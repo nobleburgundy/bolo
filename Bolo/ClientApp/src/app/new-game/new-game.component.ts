@@ -47,7 +47,7 @@ export class NewGameComponent implements OnInit {
     console.log('addPlayer: ' + this.playerTypeahead.value);
     var playerGame = {
       firstName: this.playerTypeahead.value.split(' ')[0],
-      lastName: this.playerTypeahead.value.split(' ')[1],
+      lastName: this.playerTypeahead.value.split(' ').slice(1).join(' '),
       score: this.playerScore.value,
     };
     console.log('playerGame: ', playerGame);
@@ -70,6 +70,10 @@ export class NewGameComponent implements OnInit {
     event.preventDefault();
     console.log('game date: ', this.gameDateControl.value);
     console.log('players/scores: ', this.addedPlayers);
+    if (this.addedPlayers.findIndex((p) => p.score === 10000) === -1) {
+      alert('There must be at least one winner with a score of 10000.');
+      return;
+    }
     this.httpClient
       .post(environment.apiUrl + '/games', {
         gameDate: this.gameDateControl.value,
