@@ -7,7 +7,7 @@ export interface Player {
   wins: number;
   losses: number;
   gamesPlayed: number;
-  winPercentage: number;
+  winPercentage: string;
   averageScore: number;
 }
 

@@ -53,7 +53,6 @@ export class HomeComponent implements OnInit {
                 playerWins++;
               }
             });
-            console.log('wins', playerWins);
             this.players[i].wins = playerWins;
 
             this.players[i].gamesPlayed = this.getGamesPlayed(player.id);
@@ -61,8 +60,7 @@ export class HomeComponent implements OnInit {
             this.players[i].losses =
               player.gamesPlayed > 0 ? player.gamesPlayed - player.wins : 0;
 
-            this.players[i].winPercentage =
-              player.gamesPlayed > 0 ? player.wins / player.gamesPlayed : 0;
+            this.players[i].winPercentage = this.getWinPercentage(player);
 
             this.players[i].averageScore = this.getAverageScore(
               player.id,
@@ -73,6 +71,17 @@ export class HomeComponent implements OnInit {
         },
         (error) => console.error(error)
       );
+  }
+
+  /**
+   * Gets the win percentage for a player.
+   * @param player - The player.
+   * @returns The win percentage for the player.
+   */
+  getWinPercentage(player: Player): string {
+    return player.gamesPlayed > 0
+      ? (Math.round((player.wins / player.gamesPlayed) * 100) / 100).toFixed(3)
+      : '0';
   }
 
   /**
@@ -92,7 +101,9 @@ export class HomeComponent implements OnInit {
         totalScore += playerGame.score;
       }
     });
-    return totalScore / (playerGames.length > 0 ? playerGames.length : 1);
+
+    var ave = totalScore / (playerGames.length > 0 ? playerGames.length : 1);
+    return Math.round(ave);
   }
 
   /**
