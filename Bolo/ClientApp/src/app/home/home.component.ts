@@ -9,6 +9,9 @@ import { switchMap } from 'rxjs/operators';
   selector: 'app-home',
   templateUrl: './home.component.html',
 })
+/**
+ * Represents the HomeComponent class.
+ */
 export class HomeComponent implements OnInit {
   games!: Game[];
   players!: Player[];
@@ -18,6 +21,9 @@ export class HomeComponent implements OnInit {
     this.httpClient = http;
   }
 
+  /**
+   * Initializes the component.
+   */
   ngOnInit(): void {
     this.httpClient
       .get<Game[]>(environment.apiUrl + '/games')
@@ -50,30 +56,31 @@ export class HomeComponent implements OnInit {
             console.log('wins', playerWins);
             this.players[i].wins = playerWins;
 
-            this.players[i].gamesPlayed = this.games.filter((game) =>
-              game.players.filter((p) => p.playerId === player.id)
-            ).length;
+            this.players[i].gamesPlayed = this.getGamesPlayed(player.id);
 
             this.players[i].losses =
               player.gamesPlayed > 0 ? player.gamesPlayed - player.wins : 0;
 
             this.players[i].winPercentage =
-              player.gamesPlayed > 0
-                ? (player.wins / player.gamesPlayed) * 100
-                : 0;
+              player.gamesPlayed > 0 ? player.wins / player.gamesPlayed : 0;
 
             this.players[i].averageScore = this.getAverageScore(
               player.id,
               this.games
             );
-
-            console.log('player stats', this.players);
             i++;
           });
         },
         (error) => console.error(error)
       );
   }
+
+  /**
+   * Calculates the average score for a player.
+   * @param id - The player ID.
+   * @param games - The list of games.
+   * @returns The average score for the player.
+   */
   getAverageScore(id: number, games: Game[]): number {
     var playerGames = games.filter((game) =>
       game.players.some((p) => p.playerId === id)
@@ -85,7 +92,18 @@ export class HomeComponent implements OnInit {
         totalScore += playerGame.score;
       }
     });
-    return totalScore / playerGames.length > 0 ? totalScore / playerGames.length : 0;
+    return totalScore / (playerGames.length > 0 ? playerGames.length : 1);
+  }
+
+  /**
+   * Gets the number of games played by a player.
+   * @param playerId - The player ID.
+   * @returns The number of games played by the player.
+   */
+  getGamesPlayed(playerId: number): number {
+    return this.games.filter((game) =>
+      game.players.some((p) => p.playerId === playerId)
+    ).length;
   }
 }
 

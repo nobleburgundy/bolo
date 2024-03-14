@@ -11,13 +11,13 @@ import { formatDate } from '@angular/common';
 })
 export class NewGameComponent implements OnInit {
   httpClient: HttpClient;
-  players: string[] = [];
+  players: Player[] = [];
   playerTypeahead = new FormControl();
   winnerTypeahead = new FormControl();
   playerScore = new FormControl();
   today = new Date();
   gameDateControl = new FormControl();
-  filteredPlayers: string[] = [];
+  filteredPlayers: Player[] = [];
   addedPlayers: PlayerGame[] = [];
 
   constructor(http: HttpClient) {
@@ -29,7 +29,7 @@ export class NewGameComponent implements OnInit {
     this.httpClient.get<Player[]>(environment.apiUrl + '/players').subscribe(
       (result) => {
         console.log('players results', result);
-        this.players = result.map((p) => `${p.firstName} ${p.lastName}`);
+        this.players = result;
       },
       (error) => console.error(error)
     );
@@ -37,8 +37,12 @@ export class NewGameComponent implements OnInit {
 
   filterPlayers() {
     const searchStr = this.playerTypeahead.value.toLowerCase();
-    this.filteredPlayers = this.players.filter((player) =>
-      player.toLowerCase().includes(searchStr)
+    var searchFirst = searchStr.split(' ')[0];
+    var searchLast = searchStr.split(' ').slice(1).join(' ');
+    this.filteredPlayers = this.players.filter(
+      (p) =>
+        p.firstName.toLowerCase().indexOf(searchFirst) > -1 &&
+        p.lastName.toLowerCase().indexOf(searchLast) > -1
     );
   }
 
@@ -48,21 +52,37 @@ export class NewGameComponent implements OnInit {
     var playerGame = {
       firstName: this.playerTypeahead.value.split(' ')[0],
       lastName: this.playerTypeahead.value.split(' ').slice(1).join(' '),
-      score: this.playerScore.value,
+      score: parseInt(this.playerScore.value),
     };
-    console.log('playerGame: ', playerGame);
-    this.addedPlayers.push(playerGame);
+
+    var foundPlayer = this.players.find(
+      (p) =>
+        p.firstName === playerGame.firstName &&
+        p.lastName === playerGame.lastName
+    );
+    console.log('playerGame: ', playerGame, 'foundplayer', foundPlayer);
+    if (!foundPlayer) {
+      alert('Player not found');
+      return;
+    }
+    foundPlayer.score = playerGame.score;
+    this.addedPlayers.push(foundPlayer);
   }
 
   updateInput(event: any) {
     // super basic typeahead - needs to be improved
     event.preventDefault();
     console.log('updateInput: ' + event.target.value, this.players);
-    var foundPlayer = this.players.filter(
-      (player) => player.indexOf(event.target.value) > -1
-    );
+    var searchStr = event.target.value.replace(' ', '').toLowerCase();
+
+    var foundPlayer = this.players.filter((p) => {
+      var playerString = (p.firstName + p.lastName).toLowerCase();
+      return playerString.indexOf(searchStr) > -1;
+    });
     if (foundPlayer.length == 1) {
-      this.playerTypeahead.setValue(foundPlayer[0]);
+      this.playerTypeahead.setValue(
+        foundPlayer[0].firstName + ' ' + foundPlayer[0].lastName
+      );
     }
   }
 
@@ -91,5 +111,6 @@ export class NewGameComponent implements OnInit {
 interface PlayerGame {
   firstName: string;
   lastName: string;
-  score: number;
+  score?: number;
+  id: number;
 }

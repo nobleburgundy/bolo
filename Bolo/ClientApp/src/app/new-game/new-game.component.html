@@ -32,7 +32,8 @@
     <div class="mb-3 row">
       <h2>Added Players:</h2>
       <ul>
-        <li *ngFor="let player of addedPlayers">{{ player.firstName }} {{ player.lastName }} - {{ player.score }}</li>
+        <li *ngFor="let player of addedPlayers">{{player.id}} {{ player.firstName }} {{ player.lastName }} -
+          {{ player.score }}</li>
       </ul>
     </div>
     <div class="mb-3 row">
@@ -42,30 +43,3 @@
     </div>
   </form>
 </div>
-
-<!-- <h2>New Game</h2>
-<form>
-  <div class="new-game-form">
-    <div class="input-group">
-      <label for="date">Date</label>
-      <input type="date" class="form-control" id="date" required />
-    </div>
-    <div class="input-group">
-      <label for="winner">Winner</label>
-      <input type="text" class="form-control" [formControl]="winnerTypeahead" id="winner" (input)="filterPlayers()"
-        (keydown.tab)="updateInput($event)" required />
-    </div>
-    <div class="input-group">
-      <label for="players">Players</label>
-      <input type="text" class="form-control" [formControl]="playerTypeahead" id="players" (input)="filterPlayers()"
-        (keydown.enter)="addPlayer($event)" (keydown.tab)="updateInput($event)" required />
-      <h2>Added Players:</h2>
-      <ul>
-        <li *ngFor="let player of addedPlayers">{{ player }}</li>
-      </ul>
-    </div>
-    <div class="form-group mt-3">
-      <button type="button" class="btn btn-primary" id="add-player">Submit Game</button>
-    </div>
-  </div>
-</form> -->
