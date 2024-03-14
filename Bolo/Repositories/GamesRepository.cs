@@ -210,23 +210,21 @@ public class GamesRepository : IRepository<Game>
      */
     public int AddGameWithPlayerScores(DateTime gameDate, IEnumerable<PlayerScore> gamePlayers)
     {
-        Console.WriteLine("AddGamesWithPlayersScores gameDate: " + gameDate);
         var gameId = NewGame(gameDate);
-        Console.WriteLine("AddGamesWithPlayersScores gameId: " + gameId);
         using (var conn = new NpgsqlConnection(_connectionString))
         {
             conn.Open();
 
-
             foreach (var gamePlayer in gamePlayers)
             {
-                var playerId = playersRepository.GetById(gamePlayer.PlayerId);
-                Console.WriteLine($"AddGamesWithPlayersScores playerId: {playerId.Id} {playerId.FirstName} {playerId.LastName}");
+                var playerId = playersRepository.GetById(gamePlayer.Id);
                 if (playerId.Id == 0)
                 {
-                    Console.WriteLine($"AddGamesWithPlayersScores adding new player: {gamePlayer.FirstName} {gamePlayer.LastName}");
-                    gamePlayer.PlayerId = playersRepository.Add(new Player(gamePlayer.FirstName, gamePlayer.LastName));
-                    Console.WriteLine($"AddGamesWithPlayersScores new playerId: {gamePlayer.PlayerId}");
+                    Console.WriteLine($"Player not found: {gamePlayer.FirstName} {gamePlayer.LastName}");
+                    // TODO if new player not found, do we want to create it here?
+                    // gamePlayer.PlayerId = playersRepository.Add(new Player(gamePlayer.FirstName, gamePlayer.LastName));
+                    // Console.WriteLine($"AddGamesWithPlayersScores new playerId: {gamePlayer.PlayerId}");
+                    throw new ArgumentException("Player not found");
                 }
 
 
@@ -238,7 +236,7 @@ public class GamesRepository : IRepository<Game>
                 )
                 {
                     cmd.Parameters.AddWithValue("gameId", gameId);
-                    cmd.Parameters.AddWithValue("playerId", gamePlayer.PlayerId);
+                    cmd.Parameters.AddWithValue("playerId", gamePlayer.Id);
                     cmd.Parameters.AddWithValue("score", gamePlayer.Score);
                     cmd.ExecuteNonQuery();
                 }
