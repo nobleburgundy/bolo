@@ -31,10 +31,11 @@
     </div>
     <div class="mb-3 row">
       <h2>Added Players:</h2>
-      <ul>
+      <!-- <ul>
         <li *ngFor="let player of addedPlayers">{{player.id}} {{ player.firstName }} {{ player.lastName }} -
           {{ player.score }}</li>
-      </ul>
+      </ul> -->
+      <app-new-player-table [addedPlayers]="addedPlayers"></app-new-player-table>
     </div>
     <div class="mb-3 row">
       <div class="col-sm-10">

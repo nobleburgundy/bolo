@@ -18,7 +18,7 @@ export class NewGameComponent implements OnInit {
   today = new Date();
   gameDateControl = new FormControl();
   filteredPlayers: Player[] = [];
-  addedPlayers: PlayerGame[] = [];
+  addedPlayers: Player[] = [];
 
   constructor(http: HttpClient) {
     this.httpClient = http;
@@ -106,11 +106,4 @@ export class NewGameComponent implements OnInit {
         (error) => console.error(error)
       );
   }
-}
-
-interface PlayerGame {
-  firstName: string;
-  lastName: string;
-  score?: number;
-  id: number;
 }

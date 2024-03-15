@@ -18,3 +18,10 @@ export interface GamePlayer {
   lastName: string;
   score: number;
 }
+
+interface PlayerGame {
+  firstName: string;
+  lastName: string;
+  score?: number;
+  id: number;
+}
