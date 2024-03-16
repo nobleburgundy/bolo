@@ -19,6 +19,7 @@ export class NewGameComponent implements OnInit {
   gameDateControl = new FormControl();
   filteredPlayers: Player[] = [];
   addedPlayers: Player[] = [];
+  loading = false;
 
   constructor(http: HttpClient) {
     this.httpClient = http;
@@ -26,12 +27,16 @@ export class NewGameComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.loading = true;
     this.httpClient.get<Player[]>(environment.apiUrl + '/players').subscribe(
       (result) => {
         console.log('players results', result);
         this.players = result;
       },
-      (error) => console.error(error)
+      (error) => console.error(error),
+      () => {
+        this.loading = false;
+      }
     );
   }
 
@@ -88,6 +93,7 @@ export class NewGameComponent implements OnInit {
 
   addNewGame(event: any) {
     event.preventDefault();
+    this.loading = true;
     console.log('game date: ', this.gameDateControl.value);
     console.log('players/scores: ', this.addedPlayers);
     if (this.addedPlayers.findIndex((p) => p.score === 10000) === -1) {
@@ -103,7 +109,14 @@ export class NewGameComponent implements OnInit {
         (result) => {
           console.log('games post result', result);
         },
-        (error) => console.error(error)
+        (error) => console.error(error),
+        () => {
+          this.loading = false;
+        }
       );
+  }
+
+  enableSubmit(): boolean {
+    return this.addedPlayers.filter((p) => p.score === 10000).length > 0;
   }
 }

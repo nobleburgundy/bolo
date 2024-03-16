@@ -12,6 +12,7 @@ import { FetchDataComponent } from './fetch-data/fetch-data.component';
 import { PastGamesComponent } from './past-games/past-games.component';
 import { NewGameComponent } from './new-game/new-game.component';
 import { NewPlayerTableComponent } from './new-player-table/new-player-table.component';
+import { SpinnerComponent } from './spinner/spinner.component';
 
 @NgModule({
   declarations: [
@@ -23,6 +24,7 @@ import { NewPlayerTableComponent } from './new-player-table/new-player-table.com
     NewGameComponent,
     HomeComponent,
     NewPlayerTableComponent,
+    SpinnerComponent
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),

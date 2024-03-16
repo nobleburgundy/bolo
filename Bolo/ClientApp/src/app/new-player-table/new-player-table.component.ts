@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { Player } from '../models/Player';
 
 @Component({
@@ -8,9 +8,11 @@ import { Player } from '../models/Player';
 })
 export class NewPlayerTableComponent {
   @Input() addedPlayers: Player[] = [];
+  @Output() addedPlayersChange = new EventEmitter<any>();
 
   removePlayer(playerId: number) {
     this.addedPlayers = this.addedPlayers.filter((p) => p.id !== playerId);
+    this.addedPlayersChange.emit(this.addedPlayers);
   }
 
   showTieBreakColumn(): boolean {

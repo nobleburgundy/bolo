@@ -1,3 +1,4 @@
+<app-spinner *ngIf="loading"></app-spinner>
 <div class="container py-5">
   <form>
     <div class="mb-3 row">
@@ -31,15 +32,13 @@
     </div>
     <div class="mb-3 row">
       <h2>Added Players:</h2>
-      <!-- <ul>
-        <li *ngFor="let player of addedPlayers">{{player.id}} {{ player.firstName }} {{ player.lastName }} -
-          {{ player.score }}</li>
-      </ul> -->
-      <app-new-player-table [addedPlayers]="addedPlayers"></app-new-player-table>
+      <app-new-player-table [addedPlayers]="addedPlayers" (addedPlayersChange)="addedPlayers=$event">
+      </app-new-player-table>
     </div>
     <div class="mb-3 row">
       <div class="col-sm-10">
-        <button type="submit" class="btn btn-primary" (click)="addNewGame($event)">Submit</button>
+        <button type="submit" class="btn btn-primary" (click)="addNewGame($event)"
+          [disabled]="!enableSubmit()">Submit</button>
       </div>
     </div>
   </form>
