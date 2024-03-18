@@ -19,8 +19,8 @@ services:
         value: db123
       - key: POSTGRES_DB
         value: bolo_db
- 
-database:
+
+databases:
   - name: db
     image: postgres:13
     env:
