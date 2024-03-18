@@ -7,6 +7,40 @@ services:
         value: http://+:5000
     dependsOn:
       - backend
+    type: web
+  - name: backend
+    buildCommand: docker build -t backend-image .
+    startCommand: docker run -p 5000:5000 backend-image
+    env:
+      - key: POSTGRES_USER
+        value: jgould
+      - key: POSTGRES_PASSWORD
+        value: db123
+      - key: POSTGRES_DB
+        value: bolo_db
+    type: web
+  - name: db
+    image: postgres:13
+    env:
+      - key: POSTGRES_USER
+        value: jgould
+      - key: POSTGRES_PASSWORD
+        value: db123
+      - key: POSTGRES_DB
+        value: bolo_db
+    volumes:
+      - name: db-data
+        mountPath: /var/lib/postgresql/data
+        type: volume
+    type: database
+  - name: frontend
+    buildCommand: docker build -t frontend-image ./ClientApp
+    startCommand: docker run -p 80:80 frontend-image
+    env:
+      - key: ASPNETCORE_URLS
+        value: http://+:5000
+    dependsOn:
+      - backend
   - name: backend
     buildCommand: docker build -t backend-image .
     startCommand: docker run -p 5000:5000 backend-image
