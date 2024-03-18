@@ -29,3 +29,4 @@ services:
     volumes:
       - name: db-data
         mountPath: /var/lib/postgresql/data
+        type: volume
